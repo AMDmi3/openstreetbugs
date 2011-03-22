@@ -274,10 +274,10 @@ function putAJAXMarker(id, lon, lat, text, type)
 	{
 		var bug = {id: id, text: text, lat: lat, lon: lon, type: type, feature: null};
 
-		if (bug.type == 0)
-			bug.feature = create_feature(lon2x(lon), lat2y(lat), popup_open_bug(bug), type);
-		else
+		if (bug.type == 1)
 			bug.feature = create_feature(lon2x(lon), lat2y(lat), popup_closed_bug(bug), type);
+		else
+			bug.feature = create_feature(lon2x(lon), lat2y(lat), popup_open_bug(bug), type);
  		
 		osb_bugs.push(bug);
 	}
@@ -434,9 +434,19 @@ function create_feature(x, y, popup_content, type)
 		icon_offset = new OpenLayers.Pixel(-icon_size.w/2, -icon_size.h/2);
 		create_feature.open_bug_icon = new OpenLayers.Icon(osb_img_path+'open_bug_marker.png', icon_size, icon_offset);
 		create_feature.closed_bug_icon = new OpenLayers.Icon(osb_img_path+'closed_bug_marker.png', icon_size, icon_offset);
+		// XXX: you may add more icons for other bug types here
+		//create_feature.other_bug_icon = new OpenLayers.Icon(osb_img_path+'other_bug_marker.png', icon_size, icon_offset);
 	}
 
-	var icon = !type ? create_feature.open_bug_icon.clone() : create_feature.closed_bug_icon.clone();
+	var icon;
+	if (type == 0)
+		icon = create_feature.open_bug_icon.clone();
+	if (type == 1)
+		icon = create_feature.closed_bug_icon.clone();
+	// XXX: you may add more bug types here
+	//if (type == 2)
+	//	icon = create_feature.other_bug_icon.clone();
+
 	var feature = new OpenLayers.Feature(osb_layer, new OpenLayers.LonLat(x, y), {icon: icon});
 	// TODO closeBox should be true, but not closing bugs by clicking the marker leads to buggy behaviour
 	feature.closeBox = false;
@@ -663,10 +673,10 @@ function reset_popup(id)
 	document.getElementById("map").style.cursor = "default";
 
 	var bug = get_bug(id);
-	if (bug.type == 0)
-		bug.feature.popup.setContentHTML(popup_open_bug(id));
-	else
+	if (bug.type == 1)
 		bug.feature.popup.setContentHTML(popup_closed_bug(id));
+	else
+		bug.feature.popup.setContentHTML(popup_open_bug(id));
 	
 	osb_state = 1;
 }

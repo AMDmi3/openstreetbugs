@@ -52,7 +52,7 @@ def main():
 
 	conn = MySQLdb.connect(db_config.host, user=db_config.user, passwd=db_config.password, db=db_config.dbname)
 	curs = conn.cursor()
-	curs.execute("UPDATE bugs SET type = 1, last_changed = NOW() WHERE id = %(id)s and type = 0", values)
+	curs.execute("UPDATE bugs SET type = 1, last_changed = NOW() WHERE id = %(id)s and type <> 1", values)
 	conn.commit()
 
 	if output_format_js:
